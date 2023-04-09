@@ -1,7 +1,7 @@
 # NetPorter
 NetPorter: A Social Network Migration Manager
 
-NetPorter is an open-source project designed to facilitate the seamless transition of user follow networks between social media platforms. Initially targeting Twitter because of Elon Musk's erratic behavior and shameful ban of Substack on April 7 2023, NetPorter aims to be a general platform capable of exporting your network from a source platform so that it can be automatically tracked and kept up to date on a target platform, such as Substack Notes or Mastadon. 
+NetPorter is an open-source project designed to facilitate the seamless transition of user follow networks between social media platforms. Initially targeting Twitter because of Elon Musk's erratic behavior and shameful ban of Substack on April 7 2023, NetPorter aims to be a general platform capable of exporting your network from a source platform so that it can be automatically tracked and kept up to date on a target platform, such as Substack Notes or Mastodon. 
 
 We assume that exporting a user's follows from Twitter is relatively straightforward, and doesn't require authentication by the user. However, to complete the export process to another network, it is neceesary to verify the ownership of *followed* accounts, so that the user can automatically follow the correct accounts on the target platform, rather than impostors. Therefore we need to verify that the NetPorter user actually owns the respective Twitter account(s).
 
