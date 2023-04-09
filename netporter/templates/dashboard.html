@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Dashboard</h1>
+  <h2>Your Twitter accounts:</h2>
+  <ul>
+    {% for account in twitter_accounts %}
+      <li>{{ account.twitter_username }}</li>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('twitter_auth') }}">Add a Twitter account</a>
+{% endblock %}

@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from models import User, TwitterAccount
+from .models import User, TwitterAccount
 from dotenv import load_dotenv
 from authlib.integrations.flask_client import OAuth
 import os
-import tweepy
+
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -42,6 +42,10 @@ twitter = oauth.register(
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -102,9 +106,26 @@ def authorize_twitter():
 
 # Function to save the user's Twitter account information
 def save_twitter_account(twitter_account_info, token):
-    # Implement the logic to save the Twitter account information
-    # in the database, associated with the current user.
-    pass
+    twitter_username = twitter_account_info['screen_name']
+    twitter_access_token = token['oauth_token']
+    twitter_access_token_secret = token['oauth_token_secret']
+
+    # Check if the Twitter account is already associated with the user
+    existing_account = TwitterAccount.query.filter_by(user_id=current_user.id, twitter_username=twitter_username).first()
+
+    if existing_account:
+        # Update the existing Twitter account with the new access token and secret
+        existing_account.twitter_access_token = twitter_access_token
+        existing_account.twitter_access_token_secret = twitter_access_token_secret
+    else:
+        # Create and save the new TwitterAccount instance
+        new_twitter_account = TwitterAccount(user_id=current_user.id, twitter_username=twitter_username,
+                                             twitter_access_token=twitter_access_token,
+                                             twitter_access_token_secret=twitter_access_token_secret)
+        db.session.add(new_twitter_account)
+
+    db.session.commit()
+
 
 @app.route('/auth/twitter/manual', methods=['POST'])
 def manual_verification():
@@ -127,10 +148,10 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
 
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    twitter_accounts = TwitterAccount.query.filter_by(user_id=current_user.id).all()
+    return render_template('dashboard.html', twitter_accounts=twitter_accounts)
 
-if __name__ == "__main__":
-    app.run(debug=True)
